@@ -1,0 +1,13 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 2026-06-04
+  Features:
+    - Ctrl+Shift+click a recipe in the crafting menu to add it as a crafting goal (+1; right-click for +5).
+    - Live, inventory-aware breakdown: goals expand into a nested, collapsible tree of components that recomputes as you craft.
+    - Counts your main inventory, the stack in your cursor, ingredients reserved by the hand-crafting queue, and fluids in storage tanks.
+    - Cheapest/simplest recipe selection (researched-first, cycle-safe, skips barrel/box/recycling loops).
+    - Green = hand-craftable now, yellow = machine-makeable now.
+    - Click-through heads-up overlay of your top remaining needs when the panel is closed.
+    - Manual tasks with an optional icon and multi-line description; reorder anything in the list.
+    - Auto-remove completed goals, or keep them shown with a tick.
+    - Per-user settings: min ticks per recalculation, max breakdown depth, auto-remove completed.

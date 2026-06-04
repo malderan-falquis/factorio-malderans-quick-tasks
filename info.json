@@ -1,0 +1,14 @@
+{
+  "name": "malderans-quick-tasks",
+  "version": "1.0.0",
+  "title": "Malderan's Quick Tasks",
+  "author": "Malderan",
+  "contact": "Malderan's Factorio Discord: https://discord.gg/pWX7wPd",
+  "homepage": "https://github.com/malderan-falquis/factorio-malderans-quick-tasks",
+  "factorio_version": "2.0",
+  "description": "Modifier-click a recipe in the crafting menu to queue it as a live, inventory-aware crafting checklist that breaks down to its components. Also supports free-form manual tasks with icons and descriptions.",
+  "dependencies": [
+    "base >= 2.0",
+    "flib >= 0.16.0"
+  ]
+}
