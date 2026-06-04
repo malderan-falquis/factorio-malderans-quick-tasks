@@ -1,0 +1,66 @@
+name: release
+
+# Build the mod zip and publish a GitHub Release whenever a version tag is pushed.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # required to create the release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read mod metadata
+        id: mod
+        run: |
+          name=$(jq -r .name info.json)
+          version=$(jq -r .version info.json)
+          title=$(jq -r .title info.json)
+          echo "name=$name"               >> "$GITHUB_OUTPUT"
+          echo "version=$version"          >> "$GITHUB_OUTPUT"
+          echo "title=$title"              >> "$GITHUB_OUTPUT"
+          echo "folder=${name}_${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify tag matches info.json version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$tag" != "${{ steps.mod.outputs.version }}" ]; then
+            echo "::error::Tag v$tag does not match info.json version ${{ steps.mod.outputs.version }}"
+            exit 1
+          fi
+
+      - name: Build mod zip
+        run: |
+          folder="${{ steps.mod.outputs.folder }}"
+          mkdir -p "build/$folder"
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.gitignore' \
+            --exclude='build' \
+            --exclude='*.zip' \
+            ./ "build/$folder/"
+          (cd build && zip -rqX "$folder.zip" "$folder")
+
+      - name: Extract changelog notes
+        run: |
+          version="${{ steps.mod.outputs.version }}"
+          awk -v v="Version: $version" '
+            $0 == v        { grab = 1; next }
+            grab && /^-+$/ { exit }
+            grab && /^Date: / { next }
+            grab           { print }
+          ' changelog.txt | sed -E 's/^    //; s/^  //' > notes.md
+          if [ ! -s notes.md ]; then echo "Release ${version}" > notes.md; fi
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ steps.mod.outputs.title }} ${{ steps.mod.outputs.version }}"
+          body_path: notes.md
+          files: build/${{ steps.mod.outputs.folder }}.zip
